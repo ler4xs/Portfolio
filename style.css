@@ -75,6 +75,7 @@ body {
   background: radial-gradient(1200px 400px at top, rgba(60,179,113,.16), transparent 40%),
               linear-gradient(#0c1218, #0e141b);
   image-rendering: pixelated; /* minecraft vibe */
+  touch-action: none;
 }
 
 /* Sections */
