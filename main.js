@@ -252,7 +252,8 @@ function draw() {
   }
 
   // cursor preview
-  drawBlock(cursor.ix, cursor.iy, heightAt(cursor.ix,cursor.iy)+1, "stone");
+  const topZ = getTopSolidZ(cursor.ix, cursor.iy);
+drawBlock(cursor.ix, cursor.iy, topZ + 1, "stone");
 }
 
 /* =========================
@@ -272,8 +273,8 @@ sceneEl.addEventListener("mousemove",e=>{
 });
 
 sceneEl.addEventListener("click",()=>{
-  const z = heightAt(cursor.ix,cursor.iy)+1;
-  placedBlocks.set(key(cursor.ix,cursor.iy,z),"stone");
+  const z = getTopSolidZ(cursor.ix, cursor.iy) + 1;
+placedBlocks.set(key(cursor.ix, cursor.iy, z), "stone");
   draw();
 });
 
@@ -293,3 +294,18 @@ sceneEl.addEventListener("touchstart",e=>{
   draw();
   requestAnimationFrame(loop);
 })();
+
+function getTopSolidZ(x, y) {
+  // เช็กจากบนลงล่าง
+  for (let z = heightAt(x, y); z >= 0; z--) {
+    // ถ้าเป็นถ้ำ = ไม่มีบล็อก
+    if (isCave(x, y, z)) continue;
+
+    // ถ้ามีบล็อกที่ผู้เล่นวางทับ
+    if (placedBlocks.has(`${x},${y},${z}`)) return z;
+
+    // บล็อก terrain ปกติ
+    return z;
+  }
+  return 0;
+}
