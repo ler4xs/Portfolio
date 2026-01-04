@@ -22,7 +22,7 @@ body {
   color: var(--text);
   background: linear-gradient(#0b0f13, #0e141b);
 
-  /* กันมือถือเด้ง */
+  /* กันมือถือเด้ง / scroll chain */
   overscroll-behavior: none;
 }
 
@@ -35,15 +35,15 @@ body {
 }
 
 /* =========================
-   Header
+   Header (STICKY)
 ========================= */
 .site-header {
-  position: sticky;
+  position: sticky;          /* 🔥 ค้างบนจอ */
   top: 0;
-  z-index: 50;
+  z-index: 100;
 
   backdrop-filter: saturate(120%) blur(8px);
-  background: rgba(11, 15, 19, 0.85);
+  background: rgba(11, 15, 19, 0.88);
   border-bottom: 1px solid #1a222b;
 }
 
@@ -106,12 +106,12 @@ body {
 }
 
 /* =========================
-   SCENE (Isometric Canvas Host)
+   Scene (Isometric Canvas Host)
 ========================= */
 .scene {
   position: relative;
   width: 100%;
-  height: 420px;                /* 🔥 FIXED HEIGHT = STABLE */
+  height: 420px;              /* 🔥 FIXED HEIGHT = STABLE */
 
   border: 3px solid #1b232c;
   border-radius: 6px;
@@ -121,7 +121,7 @@ body {
     radial-gradient(1200px 400px at top, rgba(60,179,113,.16), transparent 40%),
     linear-gradient(#0c1218, #0e141b);
 
-  overflow: hidden;             /* 🔥 สำคัญมาก */
+  overflow: hidden;           /* 🔥 กัน canvas หลุด */
   touch-action: none;
 }
 
@@ -157,7 +157,7 @@ body {
 }
 
 /* =========================
-   Cards / Facts
+   Facts / Cards
 ========================= */
 .facts {
   list-style: none;
@@ -182,6 +182,15 @@ body {
   gap: 16px;
 }
 
+.card-body {
+  padding: 16px;
+}
+
+.card-title {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
 /* =========================
    Buttons
 ========================= */
@@ -201,6 +210,15 @@ body {
 .btn.secondary {
   background: linear-gradient(#2a2f36, #21262d);
   color: var(--muted);
+}
+
+/* =========================
+   Contact
+========================= */
+.contact {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 /* =========================
@@ -231,6 +249,43 @@ body {
   }
 
   .scene {
-    height: 300px; /* 🔥 มือถือ ลดความสูงแบบปลอดภัย */
+    height: 300px;           /* 🔥 มือถือ: ลดความสูงแบบนิ่ง */
   }
+
+  /* iOS safe area */
+  .site-header {
+    top: env(safe-area-inset-top);
+  }
+}
+
+/* =========================
+   Light Mode
+========================= */
+.light {
+  --bg: #f2f6f3;
+  --panel: #e7efea;
+  --accent: #2e8b57;
+  --accent-2: #3cb371;
+  --text: #1b232c;
+  --muted: #44524a;
+  --block: #dfe7e2;
+  --shadow: rgba(0,0,0,.2);
+}
+
+/* =========================
+   Pixel Decoration
+========================= */
+.hero::after {
+  content: "";
+  display: block;
+  margin-top: 28px;
+  height: 10px;
+  background-image:
+    linear-gradient(90deg,
+      #3cb371 0 25%,
+      #2e8b57 25% 50%,
+      #1b232c 50% 75%,
+      #2a2f36 75% 100%
+    );
+  image-rendering: pixelated;
 }
