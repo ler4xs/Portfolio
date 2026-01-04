@@ -1,67 +1,65 @@
-@font-face {
-  font-family: Minecraft;
-  src: local("Minecraft"), local("Mojangles");
-}
-
+/* =====================
+   GLOBAL
+===================== */
 * {
   box-sizing: border-box;
+  image-rendering: pixelated;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   font-family: 'VT323', monospace;
+  cursor: crosshair;
 
-  /* ===== Minecraft Pixel BG ===== */
-  background-color: #5c8a3b; /* base grass tone */
-
+  /* ===== Minecraft Grass Block BG ===== */
+  background-color: #5e8f3e;
   background-image:
-    /* pixel noise layer */
     repeating-linear-gradient(
       0deg,
-      rgba(0,0,0,0.05) 0px,
-      rgba(0,0,0,0.05) 1px,
+      rgba(0,0,0,0.07) 0px,
+      rgba(0,0,0,0.07) 1px,
       transparent 1px,
-      transparent 4px
+      transparent 3px
     ),
     repeating-linear-gradient(
       90deg,
       rgba(255,255,255,0.05) 0px,
       rgba(255,255,255,0.05) 1px,
       transparent 1px,
-      transparent 4px
+      transparent 3px
     ),
-
-    /* grass pixel blocks */
     linear-gradient(
       180deg,
-      #6aa84f 0%,
-      #5c8a3b 50%,
-      #4e7a2e 100%
+      #6fbf4a 0%,
+      #5e8f3e 55%,
+      #4a6f2f 100%
     );
 
   background-size:
-    4px 4px,
-    4px 4px,
+    3px 3px,
+    3px 3px,
     100% 100%;
-
-  image-rendering: pixelated;
 }
+
 /* =====================
-   PANEL BASE
+   PANEL
 ===================== */
 .panel {
-  width: 90%;
+  width: 92%;
   max-width: 420px;
   margin: auto;
-  margin-top: 10vh;
-  padding: 16px;
+  margin-top: 8vh;
+  padding: 14px;
+
   background: #c6c6c6;
   color: #000;
+
   border: 4px solid #373737;
   box-shadow:
-    inset 4px 4px 0 #fff,
+    inset 4px 4px 0 #ffffff,
     inset -4px -4px 0 #8b8b8b;
+
   text-align: center;
 }
 
@@ -69,35 +67,54 @@ body {
   display: none;
 }
 
-.center {
-  text-align: center;
-}
-
-.logo {
-  margin: 0;
-  font-size: 32px;
+/* =====================
+   TEXT
+===================== */
+h1, h2, h3 {
+  margin: 6px 0;
+  text-shadow: 2px 2px 0 #3f3f3f;
 }
 
 .subtitle {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 /* =====================
-   BUTTON
+   BUTTON (Minecraft Style)
 ===================== */
 button {
   width: 100%;
   margin: 6px 0;
-  padding: 8px;
-  font-family: Minecraft, monospace;
-  font-size: 14px;
+  padding: 8px 0;
+
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  letter-spacing: 1px;
+
+  color: #ffffff;
   background: #7f7f7f;
+
   border: 2px solid #000;
+  box-shadow:
+    inset 2px 2px 0 #bfbfbf,
+    inset -2px -2px 0 #4f4f4f;
+
   cursor: pointer;
 }
 
 button:hover {
-  background: #a0a0a0;
+  background: #8f8f8f;
+}
+
+button:active {
+  background: #6f6f6f;
+  box-shadow:
+    inset -2px -2px 0 #bfbfbf,
+    inset 2px 2px 0 #4f4f4f;
+}
+
+button:focus {
+  outline: 2px solid #ffffff;
 }
 
 /* =====================
@@ -127,6 +144,14 @@ button:hover {
   padding: 16px;
   font-size: 24px;
   position: relative;
+
+  box-shadow:
+    inset 2px 2px 0 #bfbfbf,
+    inset -2px -2px 0 #4f4f4f;
+}
+
+.item:hover {
+  outline: 2px solid #ffffff;
 }
 
 .item:hover::after {
@@ -138,8 +163,9 @@ button:hover {
   background: #000;
   color: #fff;
   padding: 4px 6px;
-  font-size: 10px;
+  font-size: 12px;
   white-space: nowrap;
+  border: 1px solid #555;
 }
 
 /* =====================
@@ -160,11 +186,12 @@ button:hover {
    CHAT
 ===================== */
 .chat {
-  text-align: left;
-  background: #000;
-  color: #fff;
+  background: rgba(0,0,0,0.85);
+  color: #ffffff;
   padding: 8px;
+  border: 2px solid #000;
   margin-bottom: 8px;
+  text-align: left;
 }
 
 .name {
