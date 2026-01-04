@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <title>Tae | Minecraft Game Dev Portfolio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Pixel font -->
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -11,8 +15,8 @@
 <!-- =====================
      MAIN MENU
 ===================== -->
-<div id="menu" class="panel center">
-  <h1 class="logo">MINECRAFT</h1>
+<div id="menu" class="panel">
+  <h1>MINECRAFT</h1>
   <p class="subtitle">JavaScript Edition</p>
 
   <button onclick="openSection('about')">▶ Portfolio</button>
@@ -26,12 +30,14 @@
 ===================== -->
 <section id="about" class="panel hidden">
   <h2>Player Profile</h2>
+
   <div class="box">
     <p><b>Name:</b> Tae</p>
     <p><b>Class:</b> Game Developer</p>
     <p><b>Specialty:</b> Minecraft Bedrock Add-On</p>
     <p><b>Main Tool:</b> Script API</p>
   </div>
+
   <button onclick="back()">◀ Back</button>
 </section>
 
@@ -66,7 +72,7 @@
 
     <div class="project">
       <h3>Custom Camera System</h3>
-      <p>FOV + Smooth Transition</p>
+      <p>Smooth FOV & Control</p>
       <span>Math + Player Control</span>
     </div>
   </div>
@@ -79,15 +85,15 @@
 ===================== -->
 <section id="contact" class="panel hidden">
   <h2>Chat</h2>
+
   <div class="chat">
     <p><span class="name">[Tae]</span> : /contact</p>
     <p><span class="system">[System]</span> : GitHub copied!</p>
   </div>
-  <button onclick="copy()">Copy GitHub</button>
+
+  <button onclick="copyGit()">Copy GitHub</button>
   <button onclick="back()">◀ Back</button>
 </section>
-
-<audio id="click" src="assets/ui-click.mp3"></audio>
 
 <script src="script.js"></script>
 </body>
