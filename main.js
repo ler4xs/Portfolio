@@ -1,8 +1,7 @@
 /* =========================
-   WORLD SEED
+   RANDOM SEED (NEW EVERY REFRESH)
 ========================= */
-const WORLD_SEED = Math.floor(Math.random() * 1e9);
-console.log("SEED:", WORLD_SEED);
+const WORLD_SEED = crypto.getRandomValues(new Uint32Array(1))[0];
 
 /* =========================
    SETUP
