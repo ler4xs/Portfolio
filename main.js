@@ -1,6 +1,12 @@
-// =========================
-// SETUP
-// =========================
+/* =========================
+   WORLD SEED
+========================= */
+const WORLD_SEED = Math.floor(Math.random() * 1e9);
+console.log("SEED:", WORLD_SEED);
+
+/* =========================
+   SETUP
+========================= */
 const sceneEl = document.querySelector(".scene");
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
@@ -8,9 +14,6 @@ sceneEl.appendChild(canvas);
 
 const DPR = Math.min(2, window.devicePixelRatio || 1);
 
-// =========================
-// RESIZE
-// =========================
 function resize() {
   const r = sceneEl.getBoundingClientRect();
   canvas.width = Math.floor(r.width * DPR);
@@ -21,51 +24,80 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
-// =========================
-// ISOMETRIC CONFIG
-// =========================
+/* =========================
+   ISOMETRIC
+========================= */
 const iso = { tile: 24, ox: 0, oy: 0 };
 
-// =========================
-// NOISE / WORLD
-// =========================
-function rand(seed) {
-  return Math.sin(seed * 999) * 10000 % 1;
+/* =========================
+   RNG / NOISE
+========================= */
+function rand(n) {
+  return Math.abs(Math.sin(n + WORLD_SEED) * 10000) % 1;
 }
 
-function noise(x, y) {
-  const s = 42;
+function noise(x, y, scale = 1) {
+  const s = 64 * scale;
   const i = Math.floor(x / s);
   const j = Math.floor(y / s);
   const fx = (x % s) / s;
   const fy = (y % s) / s;
 
-  const a = rand(i * 37 + j * 913);
-  const b = rand((i + 1) * 37 + j * 913);
-  const c = rand(i * 37 + (j + 1) * 913);
-  const d = rand((i + 1) * 37 + (j + 1) * 913);
+  const a = rand(i * 73856093 ^ j * 19349663);
+  const b = rand((i + 1) * 73856093 ^ j * 19349663);
+  const c = rand(i * 73856093 ^ (j + 1) * 19349663);
+  const d = rand((i + 1) * 73856093 ^ (j + 1) * 19349663);
 
   const lerp = (p, q, t) => p + (q - p) * t;
   return lerp(lerp(a, b, fx), lerp(c, d, fx), fy);
 }
 
-const world = { w: 20, h: 20, maxZ: 8 };
-const waterLevel = 3;
+/* =========================
+   WORLD CONFIG
+========================= */
+const world = { w: 20, h: 20 };
+const SEA_LEVEL = 4;
+const MAX_HEIGHT = 8;
 
+/* =========================
+   HEIGHT (CONTROLLED)
+========================= */
 function heightAt(x, y) {
-  return Math.floor(2 + noise(x * 30, y * 30) * (world.maxZ - 2));
+  const base = noise(x * 24, y * 24);
+  const detail = noise(x * 80, y * 80);
+  const h = base * 0.75 + detail * 0.25;
+  return Math.max(2, Math.floor(3 + h * (MAX_HEIGHT - 3)));
 }
 
-// =========================
-// BLOCK PALETTE
-// =========================
+/* =========================
+   BIOMES
+========================= */
+const BIOME = {
+  FOREST: "forest",
+  DESERT: "desert",
+  CHERRY: "cherry"
+};
+
+function biomeAt(x, y) {
+  const n = noise(x * 6, y * 6, 2); // LOW freq = large biome
+  if (n < 0.33) return BIOME.DESERT;
+  if (n < 0.66) return BIOME.FOREST;
+  return BIOME.CHERRY;
+}
+
+/* =========================
+   PALETTE
+========================= */
 const palette = {
   grass: ["#3cb371", "#2e8b57", "#236b46"],
   dirt: ["#70543e", "#5a4534", "#4a392c"],
-  stone: ["#8f9aa3", "#6e7781", "#565e66"],
+  sand: ["#e6d690", "#d1c37a", "#bfae64"],
+  cherryGrass: ["#f2a7c6", "#de8fb2", "#c7759c"],
   water: ["#4da3ff", "#2b78e4", "#1e4f91"],
+  stone: ["#8f9aa3", "#6e7781", "#565e66"],
   wood: ["#8b5a2b", "#6f451e", "#5a3718"],
-  leaf: ["#4caf50", "#3e8e41", "#2f6b31"]
+  leaf: ["#4caf50", "#3e8e41", "#2f6b31"],
+  cherryLeaf: ["#ffb7d5", "#e89bbd", "#c97fa1"]
 };
 
 function shade(hex, k) {
@@ -73,9 +105,9 @@ function shade(hex, k) {
   return `rgb(${rgb.map(v => Math.floor(v * k)).join(",")})`;
 }
 
-// =========================
-// ISO PROJECTION
-// =========================
+/* =========================
+   ISO PROJECT
+========================= */
 function isoProject(ix, iy, iz) {
   const t = iso.tile;
   return {
@@ -84,9 +116,9 @@ function isoProject(ix, iy, iz) {
   };
 }
 
-// =========================
-// DRAW BLOCK
-// =========================
+/* =========================
+   DRAW BLOCK
+========================= */
 function drawBlock(ix, iy, iz, type) {
   const t = iso.tile;
   const p = isoProject(ix, iy, iz);
@@ -116,137 +148,121 @@ function drawBlock(ix, iy, iz, type) {
   ctx.fill();
 }
 
-// =========================
-// TREE GENERATION
-// =========================
-function hasTree(x, y) {
-  return noise(x * 99, y * 99) > 0.78 && heightAt(x, y) > waterLevel;
+/* =========================
+   TREE LOGIC
+========================= */
+function canSpawnTree(x, y) {
+  if (heightAt(x, y) <= SEA_LEVEL) return false;
+  const n = noise(x * 32, y * 32);
+  return n > 0.78;
 }
 
-function drawTree(x, y) {
-  const baseZ = heightAt(x, y) + 1;
+function drawTree(x, y, cherry) {
+  const z = heightAt(x, y) + 1;
+  drawBlock(x, y, z, "wood");
+  drawBlock(x, y, z + 1, "wood");
 
-  // trunk
-  drawBlock(x, y, baseZ, "wood");
-  drawBlock(x, y, baseZ + 1, "wood");
-
-  // leaves
-  const leaves = [
-    [0, 0, 2],
-    [1, 0, 2],
-    [-1, 0, 2],
-    [0, 1, 2],
-    [0, -1, 2],
-    [0, 0, 3]
-  ];
-
-  for (const [dx, dy, dz] of leaves) {
-    drawBlock(x + dx, y + dy, baseZ + dz, "leaf");
-  }
+  const leaf = cherry ? "cherryLeaf" : "leaf";
+  [[0,0,2],[1,0,2],[-1,0,2],[0,1,2],[0,-1,2],[0,0,3]]
+    .forEach(([dx,dy,dz]) => drawBlock(x+dx, y+dy, z+dz, leaf));
 }
 
-// =========================
-// PLAYER PLACED BLOCKS
-// =========================
+/* =========================
+   PLAYER BLOCKS
+========================= */
 const placedBlocks = new Map();
-const key = (x, y, z) => `${x},${y},${z}`;
+const key = (x,y,z)=>`${x},${y},${z}`;
 
-// =========================
-// DRAW SCENE
-// =========================
+/* =========================
+   DRAW WORLD
+========================= */
 let cursor = { ix: 10, iy: 10 };
 
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
   iso.ox = canvas.width * 0.5;
   iso.oy = 40 * DPR;
 
   // terrain
-  for (let iz = 0; iz < world.maxZ; iz++) {
-    for (let iy = world.h - 1; iy >= 0; iy--) {
-      for (let ix = world.w - 1; ix >= 0; ix--) {
-        const h = heightAt(ix, iy);
-        if (iz > h) continue;
-        drawBlock(ix, iy, iz, iz === h ? "grass" : "dirt");
+  for (let iy=world.h-1; iy>=0; iy--) {
+    for (let ix=world.w-1; ix>=0; ix--) {
+      const h = heightAt(ix, iy);
+      const biome = biomeAt(ix, iy);
+
+      for (let iz=0; iz<=h; iz++) {
+        let top;
+        if (biome===BIOME.DESERT) top="sand";
+        else if (biome===BIOME.CHERRY) top="cherryGrass";
+        else top="grass";
+
+        drawBlock(ix, iy, iz, iz===h ? top : "dirt");
       }
     }
   }
 
   // water
   ctx.globalAlpha = 0.75;
-  for (let iy = 0; iy < world.h; iy++) {
-    for (let ix = 0; ix < world.w; ix++) {
-      if (heightAt(ix, iy) < waterLevel) {
-        drawBlock(ix, iy, waterLevel, "water");
-      }
-    }
-  }
+  for (let y=0;y<world.h;y++)
+    for (let x=0;x<world.w;x++)
+      if (heightAt(x,y) <= SEA_LEVEL)
+        drawBlock(x,y,SEA_LEVEL,"water");
   ctx.globalAlpha = 1;
 
   // trees
-  for (let iy = 0; iy < world.h; iy++) {
-    for (let ix = 0; ix < world.w; ix++) {
-      if (hasTree(ix, iy)) drawTree(ix, iy);
+  for (let y=0;y<world.h;y++) {
+    for (let x=0;x<world.w;x++) {
+      if (!canSpawnTree(x,y)) continue;
+      const biome = biomeAt(x,y);
+      if (biome===BIOME.FOREST) drawTree(x,y,false);
+      if (biome===BIOME.CHERRY) drawTree(x,y,true);
     }
   }
 
   // placed blocks
-  for (const [k, type] of placedBlocks) {
-    const [x, y, z] = k.split(",").map(Number);
-    drawBlock(x, y, z, type);
+  for (const [k,type] of placedBlocks) {
+    const [x,y,z]=k.split(",").map(Number);
+    drawBlock(x,y,z,type);
   }
 
   // cursor preview
-  drawBlock(cursor.ix, cursor.iy, heightAt(cursor.ix, cursor.iy) + 1, "stone");
+  drawBlock(cursor.ix, cursor.iy, heightAt(cursor.ix, cursor.iy)+1, "stone");
 }
 
-// =========================
-// INPUT (MOUSE + TOUCH)
-// =========================
-function updateCursor(mx, my) {
-  cursor.ix = Math.max(0, Math.min(world.w - 1,
-    Math.round((my / (iso.tile * 0.5) + mx / iso.tile) / 2)
-  ));
-  cursor.iy = Math.max(0, Math.min(world.h - 1,
-    Math.round((my / (iso.tile * 0.5) - mx / iso.tile) / 2)
-  ));
+/* =========================
+   INPUT (MOUSE + TOUCH)
+========================= */
+function updateCursor(mx,my){
+  cursor.ix = Math.max(0, Math.min(world.w-1,
+    Math.round((my/(iso.tile*0.5)+mx/iso.tile)/2)));
+  cursor.iy = Math.max(0, Math.min(world.h-1,
+    Math.round((my/(iso.tile*0.5)-mx/iso.tile)/2)));
 }
 
-sceneEl.addEventListener("mousemove", e => {
-  const r = canvas.getBoundingClientRect();
-  updateCursor(
-    (e.clientX - r.left) * DPR - iso.ox,
-    (e.clientY - r.top) * DPR - iso.oy
-  );
+sceneEl.addEventListener("mousemove",e=>{
+  const r=canvas.getBoundingClientRect();
+  updateCursor((e.clientX-r.left)*DPR-iso.ox,(e.clientY-r.top)*DPR-iso.oy);
   draw();
 });
 
-sceneEl.addEventListener("click", () => {
-  const z = heightAt(cursor.ix, cursor.iy) + 1;
-  const k = key(cursor.ix, cursor.iy, z);
-  if (!placedBlocks.has(k)) placedBlocks.set(k, "stone");
+sceneEl.addEventListener("click",()=>{
+  const z = heightAt(cursor.ix,cursor.iy)+1;
+  placedBlocks.set(key(cursor.ix,cursor.iy,z),"stone");
   draw();
 });
 
-// mobile
-sceneEl.addEventListener("touchstart", e => {
+sceneEl.addEventListener("touchstart",e=>{
   e.preventDefault();
-  const t = e.touches[0];
-  const r = canvas.getBoundingClientRect();
-  updateCursor(
-    (t.clientX - r.left) * DPR - iso.ox,
-    (t.clientY - r.top) * DPR - iso.oy
-  );
-  const z = heightAt(cursor.ix, cursor.iy) + 1;
-  placedBlocks.set(key(cursor.ix, cursor.iy, z), "stone");
+  const t=e.touches[0];
+  const r=canvas.getBoundingClientRect();
+  updateCursor((t.clientX-r.left)*DPR-iso.ox,(t.clientY-r.top)*DPR-iso.oy);
+  placedBlocks.set(key(cursor.ix,cursor.iy,heightAt(cursor.ix,cursor.iy)+1),"stone");
   draw();
-}, { passive: false });
+},{passive:false});
 
-// =========================
-// LOOP
-// =========================
-function loop() {
+/* =========================
+   LOOP
+========================= */
+(function loop(){
   draw();
   requestAnimationFrame(loop);
-}
-loop();
+})();
