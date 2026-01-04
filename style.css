@@ -1,4 +1,6 @@
-/* Base Theme */
+/* =========================
+   Base Theme
+========================= */
 :root {
   --bg: #0b0f13;
   --panel: #121820;
@@ -10,56 +12,81 @@
   --shadow: rgba(0,0,0,.35);
 }
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: 'Kanit', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   color: var(--text);
   background: linear-gradient(#0b0f13, #0e141b);
 
-  overscroll-behavior: none; /* 🔥 เพิ่มตรงนี้ */
+  /* 🔥 ป้องกัน scroll chain / bounce */
+  overscroll-behavior: none;
 }
 
+/* =========================
+   Layout
+========================= */
 .container {
   width: min(1120px, 92%);
   margin: 0 auto;
 }
 
-/* Header */
+/* =========================
+   Header
+========================= */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 50;
+
   backdrop-filter: saturate(120%) blur(8px);
   background: color-mix(in oklab, var(--bg) 85%, transparent 15%);
   border-bottom: 1px solid #1a222b;
 }
+
 .header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 0;
 }
+
 .logo {
   font-family: 'Press Start 2P', monospace;
   color: var(--text);
   text-decoration: none;
   letter-spacing: 2px;
 }
-.logo span { color: var(--accent); }
 
-.nav { display: flex; gap: 16px; align-items: center; }
+.logo span {
+  color: var(--accent);
+}
+
+.nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
 .nav a {
   color: var(--muted);
   text-decoration: none;
   font-weight: 600;
 }
-.nav a:hover { color: var(--text); }
 
-/* Hero */
+.nav a:hover {
+  color: var(--text);
+}
+
+/* =========================
+   Hero
+========================= */
 .hero {
   padding: 48px 0 32px;
-  overflow: visible; /* กันตัดลูก */
+  overflow: visible;
 }
 
 .hero-grid {
@@ -68,17 +95,32 @@ body {
   gap: 24px;
   align-items: center;
 
-  min-height: 0; /* 🔥 ป้องกัน canvas หาย */
+  /* 🔥 กัน canvas หายตอน scroll */
+  min-height: 0;
 }
-.title { font-size: clamp(28px, 5vw, 44px); margin: 0 0 8px; }
-.subtitle { color: var(--muted); margin: 0 0 20px; }
 
+.title {
+  font-size: clamp(28px, 5vw, 44px);
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+
+/* =========================
+   Scene (Game Viewport)
+========================= */
 .scene {
   position: relative;
-  overflow: hidden; /* 🔥 สำคัญมาก */
-  
-  height: clamp(260px, 40vw, 460px);
+  overflow: hidden;
+
   width: 100%;
+  aspect-ratio: 1 / 1;        /* 🔥 กันยืดเพี้ยน */
+  min-height: 260px;
+  max-height: 420px;
+  height: min(60svh, 420px);  /* 🔥 FIX iOS Safari */
 
   border: 3px solid #1b232c;
   border-radius: 6px;
@@ -91,29 +133,52 @@ body {
   image-rendering: pixelated;
   touch-action: none;
 }
+
+/* Canvas inside scene */
 .scene canvas {
-  display: block;
   width: 100%;
   height: 100%;
+  display: block;
 
-  transform: translateZ(0); /* force GPU layer */
+  /* 🔥 แก้ iOS repaint bug */
+  transform: translateZ(0);
+  backface-visibility: hidden;
   will-change: transform;
 }
-/* Sections */
-.section { padding: 56px 0; }
-.section.alt { background: var(--panel); }
+
+/* =========================
+   Sections
+========================= */
+.section {
+  padding: 56px 0;
+}
+
+.section.alt {
+  background: var(--panel);
+}
+
 .section-title {
   font-family: 'Press Start 2P', monospace;
   font-size: clamp(20px, 3vw, 28px);
   margin: 0 0 28px 0;
 }
-.lead { color: var(--muted); max-width: 68ch; }
 
+.lead {
+  color: var(--muted);
+  max-width: 68ch;
+}
+
+/* =========================
+   Facts
+========================= */
 .facts {
   list-style: none;
-  padding: 0; margin: 18px 0 0;
-  display: grid; gap: 10px;
+  padding: 0;
+  margin: 18px 0 0;
+  display: grid;
+  gap: 10px;
 }
+
 .facts li {
   background: var(--block);
   border: 3px solid #1b232c;
@@ -121,22 +186,34 @@ body {
   padding: 12px 14px;
 }
 
-/* Cards */
+/* =========================
+   Cards
+========================= */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
+
 .card.block {
   background: var(--block);
   border: 3px solid #1b232c;
   border-radius: 6px;
   box-shadow: 0 8px 18px var(--shadow);
 }
-.card-body { padding: 16px; }
-.card-title { margin: 0 0 8px; font-weight: 700; }
 
-/* Buttons (pixel) */
+.card-body {
+  padding: 16px;
+}
+
+.card-title {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+/* =========================
+   Buttons (Pixel Style)
+========================= */
 .btn {
   display: inline-block;
   border: 3px solid #1b232c;
@@ -146,31 +223,84 @@ body {
   text-decoration: none;
   transition: transform .08s ease, box-shadow .2s ease, background .2s ease;
 }
+
 .btn.pixel {
-  box-shadow: inset 0 -3px 0 #1b232c, 0 6px 0 #0a0f13; /* chunky shadow */
+  box-shadow:
+    inset 0 -3px 0 #1b232c,
+    0 6px 0 #0a0f13;
 }
-.btn.primary { background: linear-gradient(#3cb371, #2e8b57); }
-.btn.secondary { background: linear-gradient(#2a2f36, #21262d); color: var(--muted); }
-.btn.tiny { padding: 8px 10px; font-size: 14px; }
-.btn:hover { transform: translateY(-1px); }
-.btn:active { transform: translateY(1px); }
 
-/* Contact */
-.contact { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn.primary {
+  background: linear-gradient(#3cb371, #2e8b57);
+}
 
-/* Footer */
-.footer { padding: 24px 0; border-top: 1px solid #1a222b; color: var(--muted); }
+.btn.secondary {
+  background: linear-gradient(#2a2f36, #21262d);
+  color: var(--muted);
+}
 
-/* Responsive */
+.btn.tiny {
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* =========================
+   Contact
+========================= */
+.contact {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* =========================
+   Footer
+========================= */
+.footer {
+  padding: 24px 0;
+  border-top: 1px solid #1a222b;
+  color: var(--muted);
+}
+
+/* =========================
+   Responsive
+========================= */
 @media (max-width: 920px) {
-  .hero-grid { grid-template-columns: 1fr; }
-  .projects-grid { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 560px) {
-  .projects-grid { grid-template-columns: 1fr; }
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-/* Light Mode */
+@media (max-width: 560px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* 🔥 FIX sticky header บน iOS */
+  .site-header {
+    top: env(safe-area-inset-top);
+  }
+
+  .hero {
+    padding-top: 24px;
+  }
+}
+
+/* =========================
+   Light Mode
+========================= */
 .light {
   --bg: #f2f6f3;
   --panel: #e7efea;
@@ -182,7 +312,9 @@ body {
   --shadow: rgba(0,0,0,.2);
 }
 
-/* Pixel decorations */
+/* =========================
+   Pixel Decoration
+========================= */
 .hero::after {
   content: "";
   display: block;
