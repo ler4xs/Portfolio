@@ -9,16 +9,27 @@ sceneEl.appendChild(canvas);
 const DPR = Math.min(2, window.devicePixelRatio || 1);
 
 // =========================
-// RESIZE
+// RESIZE (STABLE)
 // =========================
+let resizeTimer = null;
+
 function resize() {
   const r = sceneEl.getBoundingClientRect();
+
   canvas.width = Math.floor(r.width * DPR);
   canvas.height = Math.floor(r.height * DPR);
   canvas.style.width = r.width + "px";
   canvas.style.height = r.height + "px";
+
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  draw();
 }
-window.addEventListener("resize", resize);
+
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(resize, 120);
+});
+
 resize();
 
 // =========================
@@ -27,10 +38,11 @@ resize();
 const iso = { tile: 24, ox: 0, oy: 0 };
 
 // =========================
-// NOISE / WORLD
+// RNG / NOISE (FIXED)
 // =========================
 function rand(seed) {
-  return Math.sin(seed * 999) * 10000 % 1;
+  const x = Math.sin(seed * 9999) * 10000;
+  return x - Math.floor(x); // ✅ 0..1 เสมอ
 }
 
 function noise(x, y) {
@@ -49,6 +61,9 @@ function noise(x, y) {
   return lerp(lerp(a, b, fx), lerp(c, d, fx), fy);
 }
 
+// =========================
+// WORLD CONFIG
+// =========================
 const world = { w: 20, h: 20, maxZ: 8 };
 const waterLevel = 3;
 
@@ -117,36 +132,34 @@ function drawBlock(ix, iy, iz, type) {
 }
 
 // =========================
-// TREE GENERATION
+// TREE (CACHED)
 // =========================
+const treeMap = new Set();
+
 function hasTree(x, y) {
-  return noise(x * 99, y * 99) > 0.78 && heightAt(x, y) > waterLevel;
+  const k = `${x},${y}`;
+  if (treeMap.has(k)) return true;
+
+  if (noise(x * 99, y * 99) > 0.78 && heightAt(x, y) > waterLevel) {
+    treeMap.add(k);
+    return true;
+  }
+  return false;
 }
 
 function drawTree(x, y) {
   const baseZ = heightAt(x, y) + 1;
-
-  // trunk
   drawBlock(x, y, baseZ, "wood");
   drawBlock(x, y, baseZ + 1, "wood");
 
-  // leaves
-  const leaves = [
-    [0, 0, 2],
-    [1, 0, 2],
-    [-1, 0, 2],
-    [0, 1, 2],
-    [0, -1, 2],
-    [0, 0, 3]
-  ];
-
-  for (const [dx, dy, dz] of leaves) {
-    drawBlock(x + dx, y + dy, baseZ + dz, "leaf");
-  }
+  [[0,0,2],[1,0,2],[-1,0,2],[0,1,2],[0,-1,2],[0,0,3]]
+    .forEach(([dx,dy,dz]) =>
+      drawBlock(x + dx, y + dy, baseZ + dz, "leaf")
+    );
 }
 
 // =========================
-// PLAYER PLACED BLOCKS
+// PLAYER BLOCKS
 // =========================
 const placedBlocks = new Map();
 const key = (x, y, z) => `${x},${y},${z}`;
@@ -158,8 +171,9 @@ let cursor = { ix: 10, iy: 10 };
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  iso.ox = canvas.width * 0.5;
-  iso.oy = 40 * DPR;
+
+  iso.ox = canvas.width / DPR * 0.5;
+  iso.oy = 40;
 
   // terrain
   for (let iz = 0; iz < world.maxZ; iz++) {
@@ -174,21 +188,16 @@ function draw() {
 
   // water
   ctx.globalAlpha = 0.75;
-  for (let iy = 0; iy < world.h; iy++) {
-    for (let ix = 0; ix < world.w; ix++) {
-      if (heightAt(ix, iy) < waterLevel) {
-        drawBlock(ix, iy, waterLevel, "water");
-      }
-    }
-  }
+  for (let y = 0; y < world.h; y++)
+    for (let x = 0; x < world.w; x++)
+      if (heightAt(x, y) < waterLevel)
+        drawBlock(x, y, waterLevel, "water");
   ctx.globalAlpha = 1;
 
   // trees
-  for (let iy = 0; iy < world.h; iy++) {
-    for (let ix = 0; ix < world.w; ix++) {
-      if (hasTree(ix, iy)) drawTree(ix, iy);
-    }
-  }
+  for (let y = 0; y < world.h; y++)
+    for (let x = 0; x < world.w; x++)
+      if (hasTree(x, y)) drawTree(x, y);
 
   // placed blocks
   for (const [k, type] of placedBlocks) {
@@ -201,13 +210,15 @@ function draw() {
 }
 
 // =========================
-// INPUT (MOUSE + TOUCH)
+// INPUT
 // =========================
 function updateCursor(mx, my) {
-  cursor.ix = Math.max(0, Math.min(world.w - 1,
+  cursor.ix = Math.max(0, Math.min(
+    world.w - 1,
     Math.round((my / (iso.tile * 0.5) + mx / iso.tile) / 2)
   ));
-  cursor.iy = Math.max(0, Math.min(world.h - 1,
+  cursor.iy = Math.max(0, Math.min(
+    world.h - 1,
     Math.round((my / (iso.tile * 0.5) - mx / iso.tile) / 2)
   ));
 }
@@ -223,8 +234,7 @@ sceneEl.addEventListener("mousemove", e => {
 
 sceneEl.addEventListener("click", () => {
   const z = heightAt(cursor.ix, cursor.iy) + 1;
-  const k = key(cursor.ix, cursor.iy, z);
-  if (!placedBlocks.has(k)) placedBlocks.set(k, "stone");
+  placedBlocks.set(key(cursor.ix, cursor.iy, z), "stone");
   draw();
 });
 
@@ -243,10 +253,6 @@ sceneEl.addEventListener("touchstart", e => {
 }, { passive: false });
 
 // =========================
-// LOOP
+// INIT
 // =========================
-function loop() {
-  draw();
-  requestAnimationFrame(loop);
-}
-loop();
+draw();
