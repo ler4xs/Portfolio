@@ -2,6 +2,7 @@
    RANDOM SEED (NEW EVERY REFRESH)
 ========================= */
 const WORLD_SEED = crypto.getRandomValues(new Uint32Array(1))[0];
+console.log("WORLD SEED:", WORLD_SEED);
 
 /* =========================
    SETUP
@@ -13,6 +14,9 @@ sceneEl.appendChild(canvas);
 
 const DPR = Math.min(2, window.devicePixelRatio || 1);
 
+/* =========================
+   RESIZE
+========================= */
 function resize() {
   const r = sceneEl.getBoundingClientRect();
   canvas.width = Math.floor(r.width * DPR);
@@ -57,6 +61,7 @@ function noise(x, y, scale = 1) {
 const world = { w: 20, h: 20 };
 const SEA_LEVEL = 4;
 const MAX_HEIGHT = 8;
+const MIN_TREE_DISTANCE = 3;
 
 /* =========================
    HEIGHT (CONTROLLED)
@@ -69,7 +74,7 @@ function heightAt(x, y) {
 }
 
 /* =========================
-   BIOMES
+   BIOME
 ========================= */
 const BIOME = {
   FOREST: "forest",
@@ -78,7 +83,7 @@ const BIOME = {
 };
 
 function biomeAt(x, y) {
-  const n = noise(x * 6, y * 6, 2); // LOW freq = large biome
+  const n = noise(x * 6, y * 6, 2);
   if (n < 0.33) return BIOME.DESERT;
   if (n < 0.66) return BIOME.FOREST;
   return BIOME.CHERRY;
@@ -148,12 +153,24 @@ function drawBlock(ix, iy, iz, type) {
 }
 
 /* =========================
-   TREE LOGIC
+   CAVE SYSTEM
 ========================= */
-function canSpawnTree(x, y) {
-  if (heightAt(x, y) <= SEA_LEVEL) return false;
-  const n = noise(x * 32, y * 32);
-  return n > 0.78;
+function isCave(x, y, z) {
+  if (z >= heightAt(x, y) - 1) return false; // ไม่ทะลุพื้น
+  if (z < 1) return false;                   // ไม่เจาะล่างสุด
+  return noise(x * 18 + z * 12, y * 18 + z * 12) > 0.68;
+}
+
+/* =========================
+   TREE SYSTEM
+========================= */
+function canPlaceTree(x, y, placed) {
+  for (let dy = -MIN_TREE_DISTANCE; dy <= MIN_TREE_DISTANCE; dy++) {
+    for (let dx = -MIN_TREE_DISTANCE; dx <= MIN_TREE_DISTANCE; dx++) {
+      if (placed.has(`${x + dx},${y + dy}`)) return false;
+    }
+  }
+  return true;
 }
 
 function drawTree(x, y, cherry) {
@@ -182,19 +199,19 @@ function draw() {
   iso.ox = canvas.width * 0.5;
   iso.oy = 40 * DPR;
 
-  // terrain
-  for (let iy=world.h-1; iy>=0; iy--) {
-    for (let ix=world.w-1; ix>=0; ix--) {
+  // terrain + caves
+  for (let iy = world.h - 1; iy >= 0; iy--) {
+    for (let ix = world.w - 1; ix >= 0; ix--) {
       const h = heightAt(ix, iy);
       const biome = biomeAt(ix, iy);
 
-      for (let iz=0; iz<=h; iz++) {
-        let top;
-        if (biome===BIOME.DESERT) top="sand";
-        else if (biome===BIOME.CHERRY) top="cherryGrass";
-        else top="grass";
+      let top = "grass";
+      if (biome === BIOME.DESERT) top = "sand";
+      if (biome === BIOME.CHERRY) top = "cherryGrass";
 
-        drawBlock(ix, iy, iz, iz===h ? top : "dirt");
+      for (let iz = 0; iz <= h; iz++) {
+        if (isCave(ix, iy, iz)) continue;
+        drawBlock(ix, iy, iz, iz === h ? top : "dirt");
       }
     }
   }
@@ -207,13 +224,24 @@ function draw() {
         drawBlock(x,y,SEA_LEVEL,"water");
   ctx.globalAlpha = 1;
 
-  // trees
+  // trees (spaced)
+  const treeMap = new Set();
   for (let y=0;y<world.h;y++) {
     for (let x=0;x<world.w;x++) {
-      if (!canSpawnTree(x,y)) continue;
+      if (heightAt(x,y) <= SEA_LEVEL) continue;
+
       const biome = biomeAt(x,y);
-      if (biome===BIOME.FOREST) drawTree(x,y,false);
-      if (biome===BIOME.CHERRY) drawTree(x,y,true);
+      const n = noise(x * 32, y * 32);
+
+      let chance = 0;
+      if (biome === BIOME.FOREST) chance = 0.82;
+      if (biome === BIOME.CHERRY) chance = 0.86;
+      if (biome === BIOME.DESERT) continue;
+
+      if (n > chance && canPlaceTree(x,y,treeMap)) {
+        treeMap.add(`${x},${y}`);
+        drawTree(x,y, biome === BIOME.CHERRY);
+      }
     }
   }
 
@@ -224,11 +252,11 @@ function draw() {
   }
 
   // cursor preview
-  drawBlock(cursor.ix, cursor.iy, heightAt(cursor.ix, cursor.iy)+1, "stone");
+  drawBlock(cursor.ix, cursor.iy, heightAt(cursor.ix,cursor.iy)+1, "stone");
 }
 
 /* =========================
-   INPUT (MOUSE + TOUCH)
+   INPUT
 ========================= */
 function updateCursor(mx,my){
   cursor.ix = Math.max(0, Math.min(world.w-1,
