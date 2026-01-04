@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tae | Minecraft Game Dev Portfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- =====================
+     MAIN MENU
+===================== -->
+<div id="menu" class="panel center">
+  <h1 class="logo">MINECRAFT</h1>
+  <p class="subtitle">JavaScript Edition</p>
+
+  <button onclick="openSection('about')">▶ Portfolio</button>
+  <button onclick="openSection('skills')">▶ Skills</button>
+  <button onclick="openSection('projects')">▶ Projects</button>
+  <button onclick="openSection('contact')">▶ Contact</button>
+</div>
+
+<!-- =====================
+     ABOUT
+===================== -->
+<section id="about" class="panel hidden">
+  <h2>Player Profile</h2>
+  <div class="box">
+    <p><b>Name:</b> Tae</p>
+    <p><b>Class:</b> Game Developer</p>
+    <p><b>Specialty:</b> Minecraft Bedrock Add-On</p>
+    <p><b>Main Tool:</b> Script API</p>
+  </div>
+  <button onclick="back()">◀ Back</button>
+</section>
+
+<!-- =====================
+     SKILLS (Inventory)
+===================== -->
+<section id="skills" class="panel hidden">
+  <h2>Inventory</h2>
+
+  <div class="inventory">
+    <div class="item" data-tip="JavaScript / TypeScript">📘</div>
+    <div class="item" data-tip="Minecraft Script API">📦</div>
+    <div class="item" data-tip="Camera & Input System">🎥</div>
+    <div class="item" data-tip="Game Logic & Math">⚙️</div>
+  </div>
+
+  <button onclick="back()">◀ Back</button>
+</section>
+
+<!-- =====================
+     PROJECTS (Chest)
+===================== -->
+<section id="projects" class="panel hidden">
+  <h2>Chest</h2>
+
+  <div class="projects">
+    <div class="project">
+      <h3>Focus Add-On</h3>
+      <p>Camera + Emote Detection</p>
+      <span>BP / RP / Script API</span>
+    </div>
+
+    <div class="project">
+      <h3>Custom Camera System</h3>
+      <p>FOV + Smooth Transition</p>
+      <span>Math + Player Control</span>
+    </div>
+  </div>
+
+  <button onclick="back()">◀ Back</button>
+</section>
+
+<!-- =====================
+     CONTACT (Chat)
+===================== -->
+<section id="contact" class="panel hidden">
+  <h2>Chat</h2>
+  <div class="chat">
+    <p><span class="name">[Tae]</span> : /contact</p>
+    <p><span class="system">[System]</span> : GitHub copied!</p>
+  </div>
+  <button onclick="copy()">Copy GitHub</button>
+  <button onclick="back()">◀ Back</button>
+</section>
+
+<audio id="click" src="assets/ui-click.mp3"></audio>
+
+<script src="script.js"></script>
+</body>
+</html>
