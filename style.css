@@ -22,7 +22,6 @@ body {
   color: var(--text);
   background: linear-gradient(#0b0f13, #0e141b);
 
-  /* กันมือถือเด้ง / scroll chain */
   overscroll-behavior: none;
 }
 
@@ -35,10 +34,10 @@ body {
 }
 
 /* =========================
-   Header (STICKY)
+   Header (Sticky)
 ========================= */
 .site-header {
-  position: sticky;          /* 🔥 ค้างบนจอ */
+  position: sticky;
   top: 0;
   z-index: 100;
 
@@ -91,7 +90,7 @@ body {
 .hero-grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
-  gap: 24px;
+  gap: 32px;
   align-items: center;
 }
 
@@ -106,23 +105,44 @@ body {
 }
 
 /* =========================
-   Scene (Isometric Canvas Host)
+   Scene (Canvas Card)
 ========================= */
 .scene {
   position: relative;
   width: 100%;
-  height: 420px;              /* 🔥 FIXED HEIGHT = STABLE */
+  height: 420px;
+
+  margin-left: auto;
 
   border: 3px solid #1b232c;
   border-radius: 6px;
-  box-shadow: 0 12px 28px var(--shadow);
 
   background:
     radial-gradient(1200px 400px at top, rgba(60,179,113,.16), transparent 40%),
     linear-gradient(#0c1218, #0e141b);
 
-  overflow: hidden;           /* 🔥 กัน canvas หลุด */
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.45),
+    inset 0 0 0 1px rgba(255,255,255,.03);
+
+  overflow: hidden;
   touch-action: none;
+}
+
+/* subtle light */
+.scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  border-radius: 6px;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,.06),
+      transparent 40%
+    );
 }
 
 /* Canvas */
@@ -130,7 +150,6 @@ body {
   display: block;
   width: 100%;
   height: 100%;
-
   image-rendering: pixelated;
 }
 
@@ -231,7 +250,7 @@ body {
 }
 
 /* =========================
-   Responsive
+   Responsive (Mobile)
 ========================= */
 @media (max-width: 920px) {
   .hero-grid {
@@ -243,16 +262,23 @@ body {
   }
 }
 
+@media (max-width: 768px) {
+  .scene {
+    margin: 24px auto 0;
+    max-width: 520px;
+    height: 300px;
+  }
+}
+
 @media (max-width: 560px) {
   .projects-grid {
     grid-template-columns: 1fr;
   }
 
   .scene {
-    height: 300px;           /* 🔥 มือถือ: ลดความสูงแบบนิ่ง */
+    height: 280px;
   }
 
-  /* iOS safe area */
   .site-header {
     top: env(safe-area-inset-top);
   }
