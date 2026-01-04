@@ -1,100 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Tae | Minecraft Game Dev Portfolio</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portfolio นักพัฒนาเกม — ธีม Minecraft</title>
+    <meta name="description" content="พอร์ตโฟลิโอนักพัฒนาเกม สไตล์ Minecraft แบบว้าว ๆ พร้อมฉาก voxel 3D บนเว็บ" />
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="#" class="logo">MINE<span>DEV</span></a>
+        <nav class="nav">
+          <a href="#projects">ผลงาน</a>
+          <a href="#about">เกี่ยวกับ</a>
+          <a href="#contact">ติดต่อ</a>
+          <button id="toggle-theme" class="btn pixel">โหมดกลางคืน</button>
+        </nav>
+      </div>
+    </header>
 
-  <!-- Pixel font -->
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-text">
+            <h1 class="title">Portfolio สาย Game Dev</h1>
+            <p class="subtitle">ธีม Minecraft — สร้างโลก สร้างเกม สร้างประสบการณ์</p>
+            <div class="cta">
+              <a href="#projects" class="btn primary pixel">ดูผลงาน</a>
+              <a href="#contact" class="btn secondary pixel">ติดต่อ</a>
+            </div>
+          </div>
+          <div id="scene" class="scene" aria-label="Voxel 3D Scene"></div>
+        </div>
+      </section>
 
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
+      <section id="projects" class="section">
+        <div class="container">
+          <h2 class="section-title">ผลงานเด่น</h2>
+          <div class="projects-grid">
+            <article class="card block">
+              <div class="card-body">
+                <h3 class="card-title">Voxel Terrain Generator</h3>
+                <p>สร้างภูมิประเทศแบบบล็อกด้วยอัลกอริทึม noise และระบบแสง</p>
+                <a class="btn tiny pixel" href="#">ดูรายละเอียด</a>
+              </div>
+            </article>
+            <article class="card block">
+              <div class="card-body">
+                <h3 class="card-title">AI Pathfinding</h3>
+                <p>ระบบหาทางในโลก voxel ด้วย A* และ navigation mesh</p>
+                <a class="btn tiny pixel" href="#">ดูรายละเอียด</a>
+              </div>
+            </article>
+            <article class="card block">
+              <div class="card-body">
+                <h3 class="card-title">WebGL Shader Playground</h3>
+                <p>สำรวจการเขียน Shader เพื่อปรับลุคแบบ Minecraft</p>
+                <a class="btn tiny pixel" href="#">ดูรายละเอียด</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
 
-<!-- =====================
-     MAIN MENU
-===================== -->
-<div id="menu" class="panel">
-  <h1>MINECRAFT</h1>
-  <p class="subtitle">JavaScript Edition</p>
+      <section id="about" class="section alt">
+        <div class="container">
+          <h2 class="section-title">เกี่ยวกับผม/ฉัน</h2>
+          <p class="lead">
+            นักพัฒนาเกมที่หลงใหลในโลก voxel, ระบบฟิสิกส์, และการเรนเดอร์สมัยใหม่บนเว็บ
+            เป้าหมายคือสร้างประสบการณ์ที่ชวนว้าว ทั้งภาพและระบบเกมเพลย์
+          </p>
+          <ul class="facts">
+            <li>ประสบการณ์: Unity, Unreal, WebGL/Three.js</li>
+            <li>ความถนัด: Gameplay, Tooling, Rendering</li>
+            <li>สนใจ: Procedural Generation, Multiplayer, AI</li>
+          </ul>
+        </div>
+      </section>
 
-  <button onclick="openSection('about')">▶ Portfolio</button>
-  <button onclick="openSection('skills')">▶ Skills</button>
-  <button onclick="openSection('projects')">▶ Projects</button>
-  <button onclick="openSection('contact')">▶ Contact</button>
-</div>
+      <section id="contact" class="section">
+        <div class="container">
+          <h2 class="section-title">ติดต่อ</h2>
+          <div class="contact">
+            <a class="btn primary pixel" href="mailto:your@email.com">ส่งอีเมล</a>
+            <a class="btn secondary pixel" href="#">LinkedIn</a>
+            <a class="btn secondary pixel" href="#">GitHub</a>
+          </div>
+        </div>
+      </section>
+    </main>
 
-<!-- =====================
-     ABOUT
-===================== -->
-<section id="about" class="panel hidden">
-  <h2>Player Profile</h2>
+    <footer class="footer">
+      <div class="container">
+        <small>© 2026 MineDev Portfolio — Made with voxel passion</small>
+      </div>
+    </footer>
 
-  <div class="box">
-    <p><b>Name:</b> Tae</p>
-    <p><b>Class:</b> Game Developer</p>
-    <p><b>Specialty:</b> Minecraft Bedrock Add-On</p>
-    <p><b>Main Tool:</b> Script API</p>
-  </div>
-
-  <button onclick="back()">◀ Back</button>
-</section>
-
-<!-- =====================
-     SKILLS (Inventory)
-===================== -->
-<section id="skills" class="panel hidden">
-  <h2>Inventory</h2>
-
-  <div class="inventory">
-    <div class="item" data-tip="JavaScript / TypeScript">📘</div>
-    <div class="item" data-tip="Minecraft Script API">📦</div>
-    <div class="item" data-tip="Camera & Input System">🎥</div>
-    <div class="item" data-tip="Game Logic & Math">⚙️</div>
-  </div>
-
-  <button onclick="back()">◀ Back</button>
-</section>
-
-<!-- =====================
-     PROJECTS (Chest)
-===================== -->
-<section id="projects" class="panel hidden">
-  <h2>Chest</h2>
-
-  <div class="projects">
-    <div class="project">
-      <h3>Focus Add-On</h3>
-      <p>Camera + Emote Detection</p>
-      <span>BP / RP / Script API</span>
-    </div>
-
-    <div class="project">
-      <h3>Custom Camera System</h3>
-      <p>Smooth FOV & Control</p>
-      <span>Math + Player Control</span>
-    </div>
-  </div>
-
-  <button onclick="back()">◀ Back</button>
-</section>
-
-<!-- =====================
-     CONTACT (Chat)
-===================== -->
-<section id="contact" class="panel hidden">
-  <h2>Chat</h2>
-
-  <div class="chat">
-    <p><span class="name">[Tae]</span> : /contact</p>
-    <p><span class="system">[System]</span> : GitHub copied!</p>
-  </div>
-
-  <button onclick="copyGit()">Copy GitHub</button>
-  <button onclick="back()">◀ Back</button>
-</section>
-
-<script src="script.js"></script>
-</body>
+    <script type="module" src="main.js"></script>
+  </body>
 </html>
