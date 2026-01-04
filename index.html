@@ -3,71 +3,91 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0b0f13" />
-    <title>Portfolio — รวบรวมผลงาน</title>
-    <meta name="description" content="Portfolio รวบรวมผลงานของ LeRaxs" />
+    <meta name="theme-color" content="#f2c6d8" />
+    <title>LeRaxs — Game Dev Portfolio</title>
+    <meta name="description" content="Portfolio รวมผลงานด้าน Game Dev และ Minecraft Add-On ของ LeRaxs" />
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
   </head>
+
   <body>
     <header class="site-header">
       <div class="container header-inner">
         <a href="#" class="logo">Le<span>Raxs</span></a>
         <nav class="nav" aria-label="เมนูหลัก">
           <a href="#projects">ผลงาน</a>
-          <a href="#about">เกี่ยวกับ</a>
+          <a href="#about">เกี่ยวกับผม</a>
           <a href="#contact">ติดต่อ</a>
         </nav>
       </div>
     </header>
 
     <main>
+      <!-- HERO -->
       <section class="hero">
         <div class="container hero-grid">
           <div class="hero-text">
-            <h1 class="title">Portfolio — รวบรวมผลงาน</h1>
+            <h1 class="title">Game Dev Portfolio</h1>
+
             <p class="subtitle">
-  Hello world 👋 ผมชื่อ <strong>เต้</strong> หรือจะเรียกว่า <strong>LeRaxs</strong> ก็ได้เช่นกัน<br><br>
+              Hello world 👋 ผมชื่อ <strong>เต้</strong> หรือ <strong>LeRaxs</strong><br><br>
 
-  ผมชื่นชอบการเล่น <strong>Minecraft</strong> เป็นอย่างมาก  
-  ในปี <strong>2021</strong> ผมมีโอกาสเปิดเซิร์ฟเวอร์ของตัวเอง  
-  ซึ่งทำให้ได้เริ่มศึกษาเกี่ยวกับ <strong>Command Block</strong> ในเกม Minecraft Bedrock<br><br>
+              ผมเป็นนักพัฒนาเกมที่หลงใหลในโลกของ <strong>Minecraft</strong>  
+              จุดเริ่มต้นของผมมาจากการเปิดเซิร์ฟเวอร์ Minecraft Bedrock ในปี <strong>2021</strong>  
+              ซึ่งทำให้ผมเริ่มศึกษา <strong>Command Block</strong> และระบบภายในเกมอย่างจริงจัง<br><br>
 
-  จากจุดนั้นเอง ทำให้ผมเริ่มสนใจด้าน <strong>Developer</strong> อย่างจริงจัง  
-  และได้ศึกษาการใช้งาน <strong>Script API</strong> สำหรับสร้าง <strong>Add-On</strong>  
-  ซึ่งเป็นการพัฒนาส่วนเสริมภายในเกม โดยใช้ทักษะ <strong>JavaScript</strong> ในการเขียน
+              จากนั้นผมได้ต่อยอดมาสู่การพัฒนา <strong>Minecraft Add-On</strong>  
+              ด้วย <strong>Script API (JavaScript)</strong>  
+              และเริ่มสนใจด้าน <strong>Game Development</strong>,  
+              <strong>Procedural Generation</strong> และ <strong>System Design</strong>
             </p>
+
             <div class="cta">
               <a href="#projects" class="btn primary pixel">ดูผลงาน</a>
-              <a href="#contact" class="btn secondary pixel">ติดต่อ</a>
+              <a href="#contact" class="btn secondary pixel">ติดต่อผม</a>
             </div>
           </div>
-          <div id="scene" class="scene" aria-label="Voxel 3D Scene"></div>
+
+          <!-- SCENE -->
+          <div id="scene" class="scene" aria-label="Procedural World Preview"></div>
         </div>
       </section>
 
+      <!-- PROJECTS -->
       <section id="projects" class="section">
         <div class="container">
           <h2 class="section-title">ผลงานเด่น</h2>
+
           <div class="projects-grid">
             <article class="card block">
               <div class="card-body">
-                <h3 class="card-title">Voxel Terrain Generator</h3>
-                <p>สร้างภูมิประเทศแบบบล็อกด้วยอัลกอริทึม noise และระบบแสง</p>
+                <h3 class="card-title">Procedural World Generator</h3>
+                <p>
+                  ระบบสร้างโลกแบบสุ่ม (Biome, Terrain, Tree, Cave)  
+                  เขียนด้วย JavaScript บน Canvas
+                </p>
                 <a class="btn tiny pixel" href="#">ดูรายละเอียด</a>
               </div>
             </article>
+
             <article class="card block">
               <div class="card-body">
-                <h3 class="card-title">AI Pathfinding</h3>
-                <p>ระบบหาทางในโลก voxel ด้วย A* และ navigation mesh</p>
+                <h3 class="card-title">Minecraft Bedrock Add-On</h3>
+                <p>
+                  พัฒนา Add-On ด้วย Script API  
+                  เน้น gameplay system และ interaction
+                </p>
                 <a class="btn tiny pixel" href="#">ดูรายละเอียด</a>
               </div>
             </article>
+
             <article class="card block">
               <div class="card-body">
-                <h3 class="card-title">WebGL Shader Playground</h3>
-                <p>สำรวจการเขียน Shader เพื่อปรับลุคแบบ Minecraft</p>
+                <h3 class="card-title">Voxel & Game System Prototype</h3>
+                <p>
+                  ทดลองออกแบบระบบเกม, voxel world  
+                  และ game mechanic บนเว็บ
+                </p>
                 <a class="btn tiny pixel" href="#">ดูรายละเอียด</a>
               </div>
             </article>
@@ -75,28 +95,31 @@
         </div>
       </section>
 
+      <!-- ABOUT -->
       <section id="about" class="section alt">
         <div class="container">
-          <h2 class="section-title">เกี่ยวกับผม/ฉัน</h2>
+          <h2 class="section-title">เกี่ยวกับผม</h2>
           <p class="lead">
-            นักพัฒนาเกมที่หลงใหลในโลก voxel, ระบบฟิสิกส์, และการเรนเดอร์สมัยใหม่บนเว็บ
-            เป้าหมายคือสร้างประสบการณ์ที่ชวนว้าว ทั้งภาพและระบบเกมเพลย์
+            ผมเป็น Game Developer ที่สนใจการออกแบบระบบเกมมากกว่าการทำแค่ภาพสวย ๆ  
+            ชอบสร้างระบบที่ “มีเหตุผล” และต่อยอดได้ เช่น world generation, mechanic และ tool
           </p>
+
           <ul class="facts">
-            <li>ประสบการณ์: Unity, Unreal, WebGL/Three.js</li>
-            <li>ความถนัด: Gameplay, Tooling, Rendering</li>
-            <li>สนใจ: Procedural Generation, Multiplayer, AI</li>
+            <li>ถนัด: Minecraft Script API, JavaScript</li>
+            <li>สนใจ: Procedural Generation, Game System</li>
+            <li>แนวทาง: Prototype ก่อน → ค่อยพัฒนาเป็นระบบจริง</li>
           </ul>
         </div>
       </section>
 
+      <!-- CONTACT -->
       <section id="contact" class="section">
         <div class="container">
           <h2 class="section-title">ติดต่อ</h2>
           <div class="contact">
-            <a class="btn primary pixel" href="mailto:leraxs.contact@gmail.com">ส่งอีเมล</a>
-            <a class="btn secondary pixel" href="#">LinkedIn</a>
+            <a class="btn primary pixel" href="mailto:leraxs.contact@gmail.com">Email</a>
             <a class="btn secondary pixel" href="#">GitHub</a>
+            <a class="btn secondary pixel" href="#">YouTube</a>
           </div>
         </div>
       </section>
@@ -104,7 +127,7 @@
 
     <footer class="footer">
       <div class="container">
-        <small>© 2026 LeRaxs</small>
+        <small>© 2026 LeRaxs — Game Dev Portfolio</small>
       </div>
     </footer>
 
