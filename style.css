@@ -1,0 +1,144 @@
+@font-face {
+  font-family: Minecraft;
+  src: local("Minecraft"), local("Mojangles");
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #1d1f21 url("assets/bg.png");
+  color: #fff;
+  font-family: Minecraft, monospace;
+  height: 100vh;
+}
+
+/* =====================
+   PANEL BASE
+===================== */
+.panel {
+  width: 90%;
+  max-width: 420px;
+  margin: auto;
+  margin-top: 10vh;
+  padding: 16px;
+  background: #c6c6c6;
+  color: #000;
+  border: 4px solid #373737;
+  box-shadow:
+    inset 4px 4px 0 #fff,
+    inset -4px -4px 0 #8b8b8b;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.center {
+  text-align: center;
+}
+
+.logo {
+  margin: 0;
+  font-size: 32px;
+}
+
+.subtitle {
+  margin-bottom: 16px;
+}
+
+/* =====================
+   BUTTON
+===================== */
+button {
+  width: 100%;
+  margin: 6px 0;
+  padding: 8px;
+  font-family: Minecraft, monospace;
+  font-size: 14px;
+  background: #7f7f7f;
+  border: 2px solid #000;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #a0a0a0;
+}
+
+/* =====================
+   BOX
+===================== */
+.box {
+  text-align: left;
+  background: #9e9e9e;
+  padding: 8px;
+  border: 2px solid #000;
+  margin-bottom: 12px;
+}
+
+/* =====================
+   INVENTORY
+===================== */
+.inventory {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.item {
+  background: #8b8b8b;
+  border: 2px solid #000;
+  padding: 16px;
+  font-size: 24px;
+  position: relative;
+}
+
+.item:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  color: #fff;
+  padding: 4px 6px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+/* =====================
+   PROJECTS
+===================== */
+.projects {
+  display: grid;
+  gap: 8px;
+}
+
+.project {
+  background: #9e9e9e;
+  border: 2px solid #000;
+  padding: 8px;
+}
+
+/* =====================
+   CHAT
+===================== */
+.chat {
+  text-align: left;
+  background: #000;
+  color: #fff;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.name {
+  color: #55ff55;
+}
+
+.system {
+  color: #ffaa00;
+}
