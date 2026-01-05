@@ -40,7 +40,7 @@ body {
   top: 0;
   z-index: 100;
   backdrop-filter: saturate(120%) blur(8px);
-  background: rgba(11, 15, 19, 0.88);
+  background: rgba(11, 15, 19, 0.9);
   border-bottom: 1px solid #1a222b;
 }
 
@@ -78,7 +78,7 @@ body {
    Hero
 ========================= */
 .hero {
-  padding: 56px 0 40px;
+  padding: 56px 0 32px;
 }
 
 .hero-grid {
@@ -99,19 +99,18 @@ body {
 }
 
 /* =========================
-   Scene (Desktop: Centered)
+   Scene (Desktop)
 ========================= */
 .scene {
   position: relative;
   width: 100%;
   height: 420px;
 
-  /* 🔥 Desktop: เลื่อนลงให้สมดุลสายตา */
   margin-top: 40px;
   margin-left: auto;
 
   border: 3px solid #1b232c;
-  border-radius: 6px;
+  border-radius: 8px;
 
   background:
     radial-gradient(1200px 400px at top, rgba(60,179,113,.16), transparent 40%),
@@ -125,22 +124,20 @@ body {
   touch-action: none;
 }
 
-/* subtle light */
+/* light overlay */
 .scene::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  border-radius: 6px;
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(255,255,255,.06),
-      transparent 45%
-    );
+  border-radius: 8px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,.06),
+    transparent 45%
+  );
 }
 
-/* Canvas */
 .scene canvas {
   display: block;
   width: 100%;
@@ -162,47 +159,12 @@ body {
 .section-title {
   font-family: 'Press Start 2P', monospace;
   font-size: clamp(20px, 3vw, 28px);
-  margin: 0 0 28px 0;
+  margin-bottom: 28px;
 }
 
 .lead {
   color: var(--muted);
   max-width: 68ch;
-}
-
-/* =========================
-   Cards / Facts
-========================= */
-.facts {
-  list-style: none;
-  padding: 0;
-  margin: 18px 0 0;
-  display: grid;
-  gap: 10px;
-}
-
-.facts li,
-.card.block {
-  background: var(--block);
-  border: 3px solid #1b232c;
-  border-radius: 6px;
-  padding: 12px 14px;
-  box-shadow: 0 8px 18px var(--shadow);
-}
-
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.card-body {
-  padding: 16px;
-}
-
-.card-title {
-  margin: 0 0 8px;
-  font-weight: 700;
 }
 
 /* =========================
@@ -235,39 +197,39 @@ body {
   color: var(--muted);
 }
 
-/* =========================
-   Responsive (Mobile)
-========================= */
+/* ======================================================
+   MOBILE FIX (สำคัญที่สุด)
+====================================================== */
 @media (max-width: 920px) {
   .hero-grid {
     grid-template-columns: 1fr;
   }
-
-  .projects-grid {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
+/* Tablet */
 @media (max-width: 768px) {
   .scene {
     margin: 32px auto 0;
-    max-width: 520px;
     height: 300px;
 
-    /* 🔥 ซูมออก + อยู่กลาง */
-    transform: scale(0.92);
+    /* ซูมออกแบบปลอดภัย */
+    transform: scale(0.9);
     transform-origin: center;
   }
 }
 
+/* Phone */
 @media (max-width: 560px) {
-  .projects-grid {
-    grid-template-columns: 1fr;
+  .scene {
+    margin: 24px auto 0;
+    height: 240px;
+
+    /* 🔥 โทรศัพท์: ซูมออกจริง */
+    transform: scale(0.82);
   }
 
-  .scene {
-    height: 260px;
-    transform: scale(0.88); /* 🔥 มือถือซูมออกอีกนิด */
+  .hero {
+    padding-bottom: 16px;
   }
 
   .site-header {
