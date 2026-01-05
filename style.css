@@ -21,7 +21,6 @@ body {
   font-family: 'Kanit', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   color: var(--text);
   background: linear-gradient(#0b0f13, #0e141b);
-
   overscroll-behavior: none;
 }
 
@@ -40,7 +39,6 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-
   backdrop-filter: saturate(120%) blur(8px);
   background: rgba(11, 15, 19, 0.88);
   border-bottom: 1px solid #1a222b;
@@ -60,9 +58,7 @@ body {
   letter-spacing: 2px;
 }
 
-.logo span {
-  color: var(--accent);
-}
+.logo span { color: var(--accent); }
 
 .nav {
   display: flex;
@@ -76,21 +72,19 @@ body {
   font-weight: 600;
 }
 
-.nav a:hover {
-  color: var(--text);
-}
+.nav a:hover { color: var(--text); }
 
 /* =========================
    Hero
 ========================= */
 .hero {
-  padding: 48px 0 32px;
+  padding: 56px 0 40px;
 }
 
 .hero-grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
-  gap: 32px;
+  gap: 40px;
   align-items: center;
 }
 
@@ -105,13 +99,15 @@ body {
 }
 
 /* =========================
-   Scene (Canvas Card)
+   Scene (Desktop: Centered)
 ========================= */
 .scene {
   position: relative;
   width: 100%;
   height: 420px;
 
+  /* 🔥 Desktop: เลื่อนลงให้สมดุลสายตา */
+  margin-top: 40px;
   margin-left: auto;
 
   border: 3px solid #1b232c;
@@ -122,7 +118,7 @@ body {
     linear-gradient(#0c1218, #0e141b);
 
   box-shadow:
-    0 12px 28px rgba(0,0,0,.45),
+    0 14px 32px rgba(0,0,0,.45),
     inset 0 0 0 1px rgba(255,255,255,.03);
 
   overflow: hidden;
@@ -135,13 +131,12 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-
   border-radius: 6px;
   background:
     linear-gradient(
       to bottom,
       rgba(255,255,255,.06),
-      transparent 40%
+      transparent 45%
     );
 }
 
@@ -176,7 +171,7 @@ body {
 }
 
 /* =========================
-   Facts / Cards
+   Cards / Facts
 ========================= */
 .facts {
   list-style: none;
@@ -232,15 +227,6 @@ body {
 }
 
 /* =========================
-   Contact
-========================= */
-.contact {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-/* =========================
    Footer
 ========================= */
 .footer {
@@ -264,9 +250,13 @@ body {
 
 @media (max-width: 768px) {
   .scene {
-    margin: 24px auto 0;
+    margin: 32px auto 0;
     max-width: 520px;
     height: 300px;
+
+    /* 🔥 ซูมออก + อยู่กลาง */
+    transform: scale(0.92);
+    transform-origin: center;
   }
 }
 
@@ -276,7 +266,8 @@ body {
   }
 
   .scene {
-    height: 280px;
+    height: 260px;
+    transform: scale(0.88); /* 🔥 มือถือซูมออกอีกนิด */
   }
 
   .site-header {
