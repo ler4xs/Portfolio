@@ -6,15 +6,21 @@ const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 sceneEl.appendChild(canvas);
 
-
+// =========================
+// DPR (IMPORTANT FOR iOS)
+// =========================
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const DPR = isIOS ? 1 : Math.min(2, window.devicePixelRatio || 1);
 
 // =========================
-// RESIZE (SIMPLE)
+// RESIZE
 // =========================
 function resize() {
   const r = sceneEl.getBoundingClientRect();
+
   canvas.width = Math.floor(r.width * DPR);
   canvas.height = Math.floor(r.height * DPR);
+
   canvas.style.width = r.width + "px";
   canvas.style.height = r.height + "px";
 }
@@ -24,13 +30,17 @@ resize();
 // =========================
 // ISOMETRIC CONFIG
 // =========================
-const iso = { tile: 24, ox: 0, oy: 0 };
+const iso = {
+  tile: 24,
+  ox: 0,
+  oy: 0
+};
 
 // =========================
-// RNG / NOISE (ORIGINAL STYLE)
+// RNG / NOISE
 // =========================
 function rand(seed) {
-  let x = Math.sin(seed) * 10000;
+  const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
 }
 
@@ -38,6 +48,7 @@ function noise(x, y) {
   const s = 42;
   const i = Math.floor(x / s);
   const j = Math.floor(y / s);
+
   const fx = (x % s) / s;
   const fy = (y % s) / s;
 
@@ -53,11 +64,18 @@ function noise(x, y) {
 // =========================
 // WORLD CONFIG
 // =========================
-const world = { w: 20, h: 20, maxZ: 8 };
+const world = {
+  w: 20,
+  h: 20,
+  maxZ: 8
+};
+
 const waterLevel = 3;
 
 function heightAt(x, y) {
-  return Math.floor(2 + noise(x * 30, y * 30) * (world.maxZ - 2));
+  return Math.floor(
+    2 + noise(x * 30, y * 30) * (world.maxZ - 2)
+  );
 }
 
 // =========================
@@ -65,15 +83,18 @@ function heightAt(x, y) {
 // =========================
 const palette = {
   grass: ["#3cb371", "#2e8b57", "#236b46"],
-  dirt: ["#70543e", "#5a4534", "#4a392c"],
+  dirt:  ["#70543e", "#5a4534", "#4a392c"],
   stone: ["#8f9aa3", "#6e7781", "#565e66"],
   water: ["#4da3ff", "#2b78e4", "#1e4f91"],
-  wood: ["#8b5a2b", "#6f451e", "#5a3718"],
-  leaf: ["#4caf50", "#3e8e41", "#2f6b31"]
+  wood:  ["#8b5a2b", "#6f451e", "#5a3718"],
+  leaf:  ["#4caf50", "#3e8e41", "#2f6b31"]
 };
 
 function shade(hex, k) {
-  const rgb = hex.replace("#", "").match(/.{2}/g).map(v => parseInt(v, 16));
+  const rgb = hex
+    .replace("#", "")
+    .match(/.{2}/g)
+    .map(v => parseInt(v, 16));
   return `rgb(${rgb.map(v => Math.floor(v * k)).join(",")})`;
 }
 
@@ -102,6 +123,7 @@ function drawBlock(ix, iy, iz, type) {
   ctx.lineTo(p.x + t, p.y + t * 0.5);
   ctx.lineTo(p.x, p.y + t);
   ctx.lineTo(p.x - t, p.y + t * 0.5);
+  ctx.closePath();
   ctx.fill();
 
   // left
@@ -111,6 +133,7 @@ function drawBlock(ix, iy, iz, type) {
   ctx.lineTo(p.x - t, p.y + t * 1.5);
   ctx.lineTo(p.x, p.y + t * 2);
   ctx.lineTo(p.x, p.y + t);
+  ctx.closePath();
   ctx.fill();
 
   // right
@@ -120,11 +143,12 @@ function drawBlock(ix, iy, iz, type) {
   ctx.lineTo(p.x + t, p.y + t * 1.5);
   ctx.lineTo(p.x, p.y + t * 2);
   ctx.lineTo(p.x, p.y + t);
+  ctx.closePath();
   ctx.fill();
 }
 
 // =========================
-// TREE (NAIVE)
+// TREE GENERATION
 // =========================
 function hasTree(x, y) {
   return noise(x * 99, y * 99) > 0.78 && heightAt(x, y) > waterLevel;
@@ -136,14 +160,16 @@ function drawTree(x, y) {
   drawBlock(x, y, baseZ, "wood");
   drawBlock(x, y, baseZ + 1, "wood");
 
-  [[0,0,2],[1,0,2],[-1,0,2],[0,1,2],[0,-1,2],[0,0,3]]
-    .forEach(([dx,dy,dz]) =>
-      drawBlock(x + dx, y + dy, baseZ + dz, "leaf")
-    );
+  [
+    [0,0,2],[1,0,2],[-1,0,2],
+    [0,1,2],[0,-1,2],[0,0,3]
+  ].forEach(([dx, dy, dz]) => {
+    drawBlock(x + dx, y + dy, baseZ + dz, "leaf");
+  });
 }
 
 // =========================
-// PLAYER BLOCKS
+// PLAYER PLACED BLOCKS
 // =========================
 const placedBlocks = new Map();
 const key = (x, y, z) => `${x},${y},${z}`;
@@ -156,6 +182,7 @@ let cursor = { ix: 10, iy: 10 };
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // camera center
   iso.ox = canvas.width * 0.5;
 
   const worldHeight =
@@ -177,16 +204,21 @@ function draw() {
 
   // water
   ctx.globalAlpha = 0.75;
-  for (let iy = 0; iy < world.h; iy++)
-    for (let ix = 0; ix < world.w; ix++)
-      if (heightAt(ix, iy) < waterLevel)
-        drawBlock(ix, iy, waterLevel, "water");
+  for (let y = 0; y < world.h; y++) {
+    for (let x = 0; x < world.w; x++) {
+      if (heightAt(x, y) < waterLevel) {
+        drawBlock(x, y, waterLevel, "water");
+      }
+    }
+  }
   ctx.globalAlpha = 1;
 
   // trees
-  for (let iy = 0; iy < world.h; iy++)
-    for (let ix = 0; ix < world.w; ix++)
-      if (hasTree(ix, iy)) drawTree(ix, iy);
+  for (let y = 0; y < world.h; y++) {
+    for (let x = 0; x < world.w; x++) {
+      if (hasTree(x, y)) drawTree(x, y);
+    }
+  }
 
   // placed blocks
   for (const [k, type] of placedBlocks) {
@@ -195,28 +227,40 @@ function draw() {
   }
 
   // cursor preview
-  drawBlock(cursor.ix, cursor.iy, heightAt(cursor.ix, cursor.iy) + 1, "stone");
+  drawBlock(
+    cursor.ix,
+    cursor.iy,
+    heightAt(cursor.ix, cursor.iy) + 1,
+    "stone"
+  );
 }
 
 // =========================
-// INPUT
+// INPUT (NO DPR MULTIPLY)
 // =========================
 function updateCursor(mx, my) {
-  cursor.ix = Math.max(0, Math.min(
-    world.w - 1,
-    Math.round((my / (iso.tile * 0.5) + mx / iso.tile) / 2)
-  ));
-  cursor.iy = Math.max(0, Math.min(
-    world.h - 1,
-    Math.round((my / (iso.tile * 0.5) - mx / iso.tile) / 2)
-  ));
+  cursor.ix = Math.max(
+    0,
+    Math.min(
+      world.w - 1,
+      Math.round((my / (iso.tile * 0.5) + mx / iso.tile) / 2)
+    )
+  );
+
+  cursor.iy = Math.max(
+    0,
+    Math.min(
+      world.h - 1,
+      Math.round((my / (iso.tile * 0.5) - mx / iso.tile) / 2)
+    )
+  );
 }
 
 sceneEl.addEventListener("mousemove", e => {
   const r = canvas.getBoundingClientRect();
   updateCursor(
-    (e.clientX - r.left) * DPR - iso.ox,
-    (e.clientY - r.top) * DPR - iso.oy
+    e.clientX - r.left - iso.ox,
+    e.clientY - r.top - iso.oy
   );
 });
 
@@ -231,15 +275,15 @@ sceneEl.addEventListener("touchstart", e => {
   const t = e.touches[0];
   const r = canvas.getBoundingClientRect();
   updateCursor(
-    (t.clientX - r.left) * DPR - iso.ox,
-    (t.clientY - r.top) * DPR - iso.oy
+    t.clientX - r.left - iso.ox,
+    t.clientY - r.top - iso.oy
   );
   const z = heightAt(cursor.ix, cursor.iy) + 1;
   placedBlocks.set(key(cursor.ix, cursor.iy, z), "stone");
 }, { passive: false });
 
 // =========================
-// LOOP (ORIGINAL)
+// LOOP
 // =========================
 function loop() {
   draw();
