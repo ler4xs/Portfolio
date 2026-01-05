@@ -6,7 +6,7 @@ const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 sceneEl.appendChild(canvas);
 
-const DPR = Math.min(2, window.devicePixelRatio || 1);
+
 
 // =========================
 // RESIZE (SIMPLE)
@@ -158,14 +158,12 @@ function draw() {
 
   iso.ox = canvas.width * 0.5;
 
-/* 
-  คำนวณตำแหน่งโลกให้อยู่กลางจริง
-  - canvas.height * 0.35 = กึ่งกลางสายตา
-  - world.maxZ * iso.tile = ความสูงโลก
-*/
-iso.oy =
-  canvas.height * 0.5 -
-  world.maxZ * iso.tile * 0.6;
+  const worldHeight =
+    (world.w + world.h) * iso.tile * 0.25 +
+    world.maxZ * iso.tile;
+
+  iso.oy = canvas.height * 0.5 - worldHeight * 0.5;
+
   // terrain
   for (let iz = 0; iz < world.maxZ; iz++) {
     for (let iy = world.h - 1; iy >= 0; iy--) {
