@@ -157,8 +157,15 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   iso.ox = canvas.width * 0.5;
-  iso.oy = 40 * DPR;
 
+/* 
+  คำนวณตำแหน่งโลกให้อยู่กลางจริง
+  - canvas.height * 0.35 = กึ่งกลางสายตา
+  - world.maxZ * iso.tile = ความสูงโลก
+*/
+iso.oy =
+  canvas.height * 0.5 -
+  world.maxZ * iso.tile * 0.6;
   // terrain
   for (let iz = 0; iz < world.maxZ; iz++) {
     for (let iy = world.h - 1; iy >= 0; iy--) {
