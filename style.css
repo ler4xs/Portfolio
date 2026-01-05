@@ -25,11 +25,15 @@ body {
 
 /* Header */
 .site-header {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 50;
+  left: 0;
+  width: 100%;
+
+  z-index: 1000;
+
   backdrop-filter: saturate(120%) blur(8px);
-  background: color-mix(in oklab, var(--bg) 85%, transparent 15%);
+  background: rgba(11, 15, 19, 0.9);
   border-bottom: 1px solid #1a222b;
 }
 .header-inner {
