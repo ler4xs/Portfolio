@@ -1,8 +1,10 @@
-/* Base Theme */
+/* =========================
+   Base Theme
+========================= */
 :root {
   --bg: #0b0f13;
   --panel: #121820;
-  --accent: #3cb371; /* minecraft green */
+  --accent: #3cb371;
   --accent-2: #2e8b57;
   --text: #e9f3ee;
   --muted: #a9b7ad;
@@ -10,115 +12,205 @@
   --shadow: rgba(0,0,0,.35);
 }
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: 'Kanit', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   color: var(--text);
   background: linear-gradient(#0b0f13, #0e141b);
+
+  /* เผื่อ header fixed */
+  padding-top: calc(64px + env(safe-area-inset-top));
+  overscroll-behavior: none;
 }
 
+/* =========================
+   Layout
+========================= */
 .container {
   width: min(1120px, 92%);
   margin: 0 auto;
 }
 
-/* Header */
+/* =========================
+   Header (FIXED – NEVER DISAPPEAR)
+========================= */
 .site-header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
 
-  z-index: 1000;
+  z-index: 9999;
 
   backdrop-filter: saturate(120%) blur(8px);
-  background: rgba(11, 15, 19, 0.9);
+  background: rgba(11, 15, 19, 0.95);
   border-bottom: 1px solid #1a222b;
+
+  padding-top: env(safe-area-inset-top);
+
+  /* iOS fix */
+  transform: translateZ(0);
 }
+
 .header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 0;
 }
+
 .logo {
   font-family: 'Press Start 2P', monospace;
   color: var(--text);
   text-decoration: none;
   letter-spacing: 2px;
 }
+
 .logo span { color: var(--accent); }
 
-.nav { display: flex; gap: 16px; align-items: center; }
+.nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
 .nav a {
   color: var(--muted);
   text-decoration: none;
   font-weight: 600;
 }
+
 .nav a:hover { color: var(--text); }
 
-/* Hero */
+/* =========================
+   Hero
+========================= */
 .hero {
-  padding: 48px 0 32px;
+  padding: 56px 0 40px;
 }
+
 .hero-grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
-  gap: 24px;
+  gap: 40px;
   align-items: center;
 }
-.title { font-size: clamp(28px, 5vw, 44px); margin: 0 0 8px; }
-.subtitle { color: var(--muted); margin: 0 0 20px; }
 
-.scene {
-  height: clamp(260px, 40vw, 460px);
-  border: 3px solid #1b232c;
-  border-radius: 6px;
-  box-shadow: 0 12px 28px var(--shadow);
-  background: radial-gradient(1200px 400px at top, rgba(60,179,113,.16), transparent 40%),
-              linear-gradient(#0c1218, #0e141b);
-  image-rendering: pixelated; /* minecraft vibe */
+.title {
+  font-size: clamp(28px, 5vw, 44px);
+  margin: 0 0 8px;
 }
 
-/* Sections */
-.section { padding: 56px 0; }
-.section.alt { background: var(--panel); }
+.subtitle {
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+
+/* =========================
+   Scene (Canvas Card)
+========================= */
+.scene {
+  position: relative;
+  width: 100%;
+  height: 420px;
+
+  margin-top: 40px;
+  margin-left: auto;
+
+  border: 3px solid #1b232c;
+  border-radius: 8px;
+
+  background:
+    radial-gradient(1200px 400px at top, rgba(60,179,113,.16), transparent 40%),
+    linear-gradient(#0c1218, #0e141b);
+
+  box-shadow:
+    0 14px 32px rgba(0,0,0,.45),
+    inset 0 0 0 1px rgba(255,255,255,.03);
+
+  overflow: hidden;
+  touch-action: none;
+}
+
+.scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 8px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,.06),
+    transparent 45%
+  );
+}
+
+.scene canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* =========================
+   Sections
+========================= */
+.section {
+  padding: 56px 0;
+}
+
+.section.alt {
+  background: var(--panel);
+}
+
 .section-title {
   font-family: 'Press Start 2P', monospace;
   font-size: clamp(20px, 3vw, 28px);
-  margin: 0 0 28px 0;
+  margin-bottom: 28px;
 }
-.lead { color: var(--muted); max-width: 68ch; }
 
+.lead {
+  color: var(--muted);
+  max-width: 68ch;
+}
+
+/* =========================
+   Facts / Cards
+========================= */
 .facts {
   list-style: none;
-  padding: 0; margin: 18px 0 0;
-  display: grid; gap: 10px;
+  padding: 0;
+  margin: 18px 0 0;
+  display: grid;
+  gap: 10px;
 }
-.facts li {
+
+.facts li,
+.card.block {
   background: var(--block);
   border: 3px solid #1b232c;
   border-radius: 6px;
   padding: 12px 14px;
+  box-shadow: 0 8px 18px var(--shadow);
 }
 
-/* Cards */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
-.card.block {
-  background: var(--block);
-  border: 3px solid #1b232c;
-  border-radius: 6px;
-  box-shadow: 0 8px 18px var(--shadow);
-}
+
 .card-body { padding: 16px; }
 .card-title { margin: 0 0 8px; font-weight: 700; }
 
-/* Buttons (pixel) */
+/* =========================
+   Buttons
+========================= */
 .btn {
   display: inline-block;
   border: 3px solid #1b232c;
@@ -126,33 +218,54 @@ body {
   padding: 10px 14px;
   color: var(--text);
   text-decoration: none;
-  transition: transform .08s ease, box-shadow .2s ease, background .2s ease;
 }
-.btn.pixel {
-  box-shadow: inset 0 -3px 0 #1b232c, 0 6px 0 #0a0f13; /* chunky shadow */
+
+.btn.primary {
+  background: linear-gradient(#3cb371, #2e8b57);
 }
-.btn.primary { background: linear-gradient(#3cb371, #2e8b57); }
-.btn.secondary { background: linear-gradient(#2a2f36, #21262d); color: var(--muted); }
-.btn.tiny { padding: 8px 10px; font-size: 14px; }
-.btn:hover { transform: translateY(-1px); }
-.btn:active { transform: translateY(1px); }
 
-/* Contact */
-.contact { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn.secondary {
+  background: linear-gradient(#2a2f36, #21262d);
+  color: var(--muted);
+}
 
-/* Footer */
-.footer { padding: 24px 0; border-top: 1px solid #1a222b; color: var(--muted); }
+/* =========================
+   Footer
+========================= */
+.footer {
+  padding: 24px 0;
+  border-top: 1px solid #1a222b;
+  color: var(--muted);
+}
 
-/* Responsive */
+/* =========================
+   Responsive
+========================= */
 @media (max-width: 920px) {
-  .hero-grid { grid-template-columns: 1fr; }
-  .projects-grid { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 560px) {
-  .projects-grid { grid-template-columns: 1fr; }
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* Light Mode */
+@media (max-width: 768px) {
+  .scene {
+    margin: 32px auto 0;
+    height: 300px;
+    transform: scale(0.9);
+    transform-origin: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .scene {
+    height: 240px;
+    transform: scale(0.82);
+  }
+}
+
+/* =========================
+   Light Mode
+========================= */
 .light {
   --bg: #f2f6f3;
   --panel: #e7efea;
@@ -164,7 +277,9 @@ body {
   --shadow: rgba(0,0,0,.2);
 }
 
-/* Pixel decorations */
+/* =========================
+   Pixel Decoration
+========================= */
 .hero::after {
   content: "";
   display: block;
