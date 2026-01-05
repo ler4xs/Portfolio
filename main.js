@@ -23,6 +23,8 @@ function resize() {
 
   canvas.style.width = r.width + "px";
   canvas.style.height = r.height + "px";
+
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 }
 window.addEventListener("resize", resize);
 resize();
@@ -112,9 +114,11 @@ function isoProject(ix, iy, iz) {
 // =========================
 // DRAW BLOCK
 // =========================
-function drawBlock(ix, iy, iz, type) {
+function drawBlock(ix, iy, iz, type, alpha = 1) {
   const t = iso.tile;
   const p = isoProject(ix, iy, iz);
+
+  ctx.globalAlpha = alpha;
 
   // top
   ctx.fillStyle = palette[type][0];
@@ -145,10 +149,31 @@ function drawBlock(ix, iy, iz, type) {
   ctx.lineTo(p.x, p.y + t);
   ctx.closePath();
   ctx.fill();
+
+  ctx.globalAlpha = 1;
 }
 
 // =========================
-// TREE GENERATION
+// TILE OUTLINE
+// =========================
+function drawTileOutline(ix, iy, iz) {
+  const t = iso.tile;
+  const p = isoProject(ix, iy, iz);
+
+  ctx.strokeStyle = "rgba(255,255,255,0.8)";
+  ctx.lineWidth = 1;
+
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y);
+  ctx.lineTo(p.x + t, p.y + t * 0.5);
+  ctx.lineTo(p.x, p.y + t);
+  ctx.lineTo(p.x - t, p.y + t * 0.5);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+// =========================
+// TREES
 // =========================
 function hasTree(x, y) {
   return noise(x * 99, y * 99) > 0.78 && heightAt(x, y) > waterLevel;
@@ -156,7 +181,6 @@ function hasTree(x, y) {
 
 function drawTree(x, y) {
   const baseZ = heightAt(x, y) + 1;
-
   drawBlock(x, y, baseZ, "wood");
   drawBlock(x, y, baseZ + 1, "wood");
 
@@ -169,93 +193,29 @@ function drawTree(x, y) {
 }
 
 // =========================
-// PLAYER PLACED BLOCKS
+// PLAYER BLOCKS
 // =========================
 const placedBlocks = new Map();
 const key = (x, y, z) => `${x},${y},${z}`;
 
 // =========================
-// DRAW SCENE
+// CURSOR
 // =========================
 let cursor = { ix: 10, iy: 10 };
 
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // camera center
-  iso.ox = canvas.width * 0.5;
-
-  const worldHeight =
-    (world.w + world.h) * iso.tile * 0.25 +
-    world.maxZ * iso.tile;
-
-  iso.oy = canvas.height * 0.5 - worldHeight * 0.5;
-
-  // terrain
-  for (let iz = 0; iz < world.maxZ; iz++) {
-    for (let iy = world.h - 1; iy >= 0; iy--) {
-      for (let ix = world.w - 1; ix >= 0; ix--) {
-        const h = heightAt(ix, iy);
-        if (iz > h) continue;
-        drawBlock(ix, iy, iz, iz === h ? "grass" : "dirt");
-      }
-    }
-  }
-
-  // water
-  ctx.globalAlpha = 0.75;
-  for (let y = 0; y < world.h; y++) {
-    for (let x = 0; x < world.w; x++) {
-      if (heightAt(x, y) < waterLevel) {
-        drawBlock(x, y, waterLevel, "water");
-      }
-    }
-  }
-  ctx.globalAlpha = 1;
-
-  // trees
-  for (let y = 0; y < world.h; y++) {
-    for (let x = 0; x < world.w; x++) {
-      if (hasTree(x, y)) drawTree(x, y);
-    }
-  }
-
-  // placed blocks
-  for (const [k, type] of placedBlocks) {
-    const [x, y, z] = k.split(",").map(Number);
-    drawBlock(x, y, z, type);
-  }
-
-  // cursor preview
-  drawBlock(
-    cursor.ix,
-    cursor.iy,
-    heightAt(cursor.ix, cursor.iy) + 1,
-    "stone"
-  );
-}
-
-// =========================
-// INPUT (NO DPR MULTIPLY)
-// =========================
 function updateCursor(mx, my) {
-  cursor.ix = Math.max(
-    0,
-    Math.min(
-      world.w - 1,
-      Math.round((my / (iso.tile * 0.5) + mx / iso.tile) / 2)
-    )
-  );
+  const t = iso.tile;
 
-  cursor.iy = Math.max(
-    0,
-    Math.min(
-      world.h - 1,
-      Math.round((my / (iso.tile * 0.5) - mx / iso.tile) / 2)
-    )
-  );
+  const ix = (mx / t + my / (t * 0.5)) * 0.5;
+  const iy = (my / (t * 0.5) - mx / t) * 0.5;
+
+  cursor.ix = Math.max(0, Math.min(world.w - 1, Math.floor(ix)));
+  cursor.iy = Math.max(0, Math.min(world.h - 1, Math.floor(iy)));
 }
 
+// =========================
+// INPUT
+// =========================
 sceneEl.addEventListener("mousemove", e => {
   const r = canvas.getBoundingClientRect();
   updateCursor(
@@ -281,6 +241,61 @@ sceneEl.addEventListener("touchstart", e => {
   const z = heightAt(cursor.ix, cursor.iy) + 1;
   placedBlocks.set(key(cursor.ix, cursor.iy, z), "stone");
 }, { passive: false });
+
+// =========================
+// DRAW SCENE
+// =========================
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  iso.ox = canvas.width * 0.5 / DPR;
+
+  const worldHeight =
+    (world.w + world.h) * iso.tile * 0.25 +
+    world.maxZ * iso.tile;
+
+  iso.oy = canvas.height * 0.5 / DPR - worldHeight * 0.5;
+
+  // terrain
+  for (let iz = 0; iz < world.maxZ; iz++) {
+    for (let iy = world.h - 1; iy >= 0; iy--) {
+      for (let ix = world.w - 1; ix >= 0; ix--) {
+        const h = heightAt(ix, iy);
+        if (iz > h) continue;
+        drawBlock(ix, iy, iz, iz === h ? "grass" : "dirt");
+      }
+    }
+  }
+
+  // water
+  ctx.globalAlpha = 0.7;
+  for (let y = 0; y < world.h; y++) {
+    for (let x = 0; x < world.w; x++) {
+      if (heightAt(x, y) < waterLevel) {
+        drawBlock(x, y, waterLevel, "water");
+      }
+    }
+  }
+  ctx.globalAlpha = 1;
+
+  // trees
+  for (let y = 0; y < world.h; y++) {
+    for (let x = 0; x < world.w; x++) {
+      if (hasTree(x, y)) drawTree(x, y);
+    }
+  }
+
+  // placed blocks
+  for (const [k, type] of placedBlocks) {
+    const [x, y, z] = k.split(",").map(Number);
+    drawBlock(x, y, z, type);
+  }
+
+  // cursor preview
+  const cz = heightAt(cursor.ix, cursor.iy) + 1;
+  drawBlock(cursor.ix, cursor.iy, cz, "stone", 0.5);
+  drawTileOutline(cursor.ix, cursor.iy, cz);
+}
 
 // =========================
 // LOOP
